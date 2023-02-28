@@ -1,7 +1,6 @@
 import hashlib
 
 from flask import Flask, render_template, request
-
 from forms import CourseForm
 
 app = Flask(__name__)
