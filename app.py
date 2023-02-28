@@ -34,3 +34,16 @@ def json_hashed_message():
         "last_name": hashed_message["name"]["last_name"],
         "age": hashed_message["age"],
     }
+
+
+@app.route("/name", methods=["GET"])
+def name_message():
+    #    data = request.json
+    data = {
+        "title": "Hi",
+        "name": {"first_name": "Dasha", "last_name": "Balasheva"},
+        "age": 25,
+        "city": "Narva",
+    }
+
+    return {"name": data["name"]}
