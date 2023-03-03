@@ -1,5 +1,5 @@
-from pydantic import BaseModel, validator
 import hashlib
+from pydantic import BaseModel, validator
 
 
 class DataModel(BaseModel):
