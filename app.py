@@ -2,6 +2,7 @@ import hashlib
 
 from flask import Flask, render_template, request
 from forms import CourseForm
+from pydantic_func import DataModel
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "3787b2b3631f5e58b18cc7b9dfa5db08b3c8b2d2f1918172"
@@ -18,21 +19,12 @@ def form_hashed_message():
         return render_template("base.html", form=form)
 
 
-@app.route("/json", methods=["GET"])
+@app.route("/json", methods=["POST"])
 def json_hashed_message():
-    #    data = request.json
-    hashed_message = {
-        "title": "Hi",
-        "name": {"first_name": "Dasha", "last_name": "Balasheva"},
-        "age": 25,
-        "city": "Narva",
-    }
-
-    return {
-        "first_name": hashed_message["name"]["first_name"],
-        "last_name": hashed_message["name"]["last_name"],
-        "age": hashed_message["age"],
-    }
+    data = request.json
+    data = DataModel(name=str(data["name"]))
+    #    return result
+    return data.name
 
 
 @app.route("/name", methods=["GET"])
@@ -40,9 +32,9 @@ def name_message():
     #    data = request.json
     data = {
         "title": "Hi",
-        "name": {"first_name": "Dasha", "last_name": "Balasheva"},
+        "name": "Dasha",
         "age": 25,
         "city": "Narva",
     }
 
-    return {"name": data["name"]}
+    return {"name": data["title"]}
