@@ -1,12 +1,11 @@
 import hashlib
 
 from flask import Flask, render_template, request
-
 from forms import CourseForm
-
 from pydantic_func import DataModel
 from marsh import MarshModel
 from marshmallow import ValidationError
+
 from config import DefaultSetting
 
 app = Flask(__name__)
