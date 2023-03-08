@@ -1,0 +1,29 @@
+---
+openapi: 3.0.0
+info: 
+  version: 2.22.0
+  title:
+    Flask_form
+paths: 
+  '/':
+
+    get:
+      tags:
+        - Flask Form
+      description: None
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+    post:
+      description: None
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error

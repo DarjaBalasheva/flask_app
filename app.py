@@ -1,11 +1,16 @@
 import hashlib
 
+from config import DefaultSetting
 from flask import Flask, render_template, request
-
 from forms import CourseForm
+from marsh import MarshModel
+from marshmallow import ValidationError
+from pydantic_func import DataModel
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "3787b2b3631f5e58b18cc7b9dfa5db08b3c8b2d2f1918172"
+
+
+app.config.from_object(DefaultSetting())
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -21,16 +26,50 @@ def form_hashed_message():
 
 @app.route("/json", methods=["GET"])
 def json_hashed_message():
-    #    data = request.json
-    hashed_message = {
-        "title": "Hi",
-        "name": {"first_name": "Dasha", "last_name": "Balasheva"},
-        "age": 25,
-        "city": "Narva",
-    }
+    data = request.json
+    data = DataModel(name=str(data["name"]))  # DataModel(**data)
 
-    return {
-        "first_name": hashed_message["name"]["first_name"],
-        "last_name": hashed_message["name"]["last_name"],
-        "age": hashed_message["age"],
-    }
+    return data.name
+
+
+@app.route("/name", methods=["POST"])
+def name_message():
+    data = request.get_json()
+    schema = MarshModel()  # 401
+
+    try:
+        result = schema.load(data)
+    except ValidationError as err:
+        return {"errors": err.messages}, 401
+
+    if result["type"] == "md5":
+        return {"result_md5": hashlib.md5(result["name"].encode()).hexdigest()}
+    else:
+        return {"result_sha256": hashlib.sha256(result["name"].encode()).hexdigest()}
+
+
+@app.route("/query")
+def query_name_message():
+    first_name = request.args["first_name"]
+    last_name = request.args.get("last_name")
+
+    return """<h1>The first name value is: {}</h1>
+<h1>The last name value is: {}</h1>""".format(
+        first_name, last_name
+    )
+
+
+@app.route("/query/type", methods=["POST"])
+def query_hashed_message():
+    type_message = request.args.get("type")
+
+    if type_message == "md5":
+        hashed_message = hashlib.md5(type_message.encode()).hexdigest()
+        return {"hashed_message_md5": hashed_message}
+
+    elif type_message == "sha256":
+        hashed_message = hashlib.sha256(type_message.encode()).hexdigest()
+        return {"hashed_message_sha256": hashed_message}
+
+    else:
+        return {"errors": "Недопустимый формат"}, 401
