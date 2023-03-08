@@ -7,7 +7,6 @@ from marsh import MarshModel
 from marshmallow import ValidationError
 from pydantic_func import DataModel
 
-
 app = Flask(__name__)
 
 
