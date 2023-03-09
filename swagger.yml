@@ -19,11 +19,111 @@ paths:
         '500':
           description: Internal Server Error
     post:
+      tags:
+        - Flask Form
       description: None
       responses:
         '200':
           description: Successful response
         '400':
           description: Bad Request
+        '500':
+          description: Internal Server Error
+
+
+  '/json':
+    
+    post:
+      tags:
+        - JSON body
+      description: Принимает на вход имя в json формате
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad Request
+        '500':
+          description: Internal Server Error
+
+  '/name':
+    
+    post:
+      tags:
+        - Marshmallow shema
+      description: Валидация с помощью Marshmallow Shema. Принимает на вход имя и тип сообщения, в зависимости от типа строки хеширует соответсвующим образом. Поле с именем не должно быть пустым и не длинее 64 символом. Тип может быть 'md5' или 'sha256' При неккореткном вводе имени или типа строки выдаёт ошибку 401
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Имя
+                type:
+                  type: string
+                  description: Формат хешрования
+              required:
+                - name
+                - type
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad Request
+        '401':
+          description: Unathorized
+        '500':
+          description: Internal Server Error
+
+
+  '/query':
+    
+    get:
+      tags:
+        - Query
+      description: Страница отправляет два query параметра first_name и last_name. first_name обязаельный параметр. Если last_name не будет указан, выставится значение None
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: first_name
+          description: имя пользователя
+        - schema:
+            type: string
+          in: query
+          name: last_name
+          description: фамилия пользователя
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad Request
+        '405' :
+          description: Method not allowed
+        '500':
+          description: Internal Server Error
+
+
+  '/query/type':
+    
+    post:
+      tags:
+        - Query
+      description: из query берется тип строки и в зависимости от её типа (sha256 or md5) хешируется
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: type
+          description: Тип строки 'md5' или 'sha256'
+
+      responses:
+        '200':
+          description: Successful response
+        '400':
+          description: Bad Request
+        '405' :
+          description: Method not allowed
         '500':
           description: Internal Server Error
