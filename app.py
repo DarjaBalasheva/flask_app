@@ -13,6 +13,7 @@ app = Flask(__name__)
 app.config.from_object(DefaultSetting())
 
 
+# Фласк форма с валидацией
 @app.route("/", methods=["GET", "POST"])
 def form_hashed_message():
     form = CourseForm()
@@ -24,7 +25,8 @@ def form_hashed_message():
         return render_template("base.html", form=form)
 
 
-@app.route("/json", methods=["GET"])
+# Принимает json из боди и возвращает ответ в виде хэша
+@app.route("/json", methods=["POST"])
 def json_hashed_message():
     data = request.json
     data = DataModel(name=str(data["name"]))  # DataModel(**data)
@@ -32,11 +34,13 @@ def json_hashed_message():
     return data.name
 
 
+# Валидация имени с помощью marshmallow. Принимает json из боди
 @app.route("/name", methods=["POST"])
 def name_message():
     data = request.get_json()
     schema = MarshModel()  # 401
 
+    # Валидационная схема написано в marsh.py
     try:
         result = schema.load(data)
     except ValidationError as err:
@@ -48,6 +52,8 @@ def name_message():
         return {"result_sha256": hashlib.sha256(result["name"].encode()).hexdigest()}
 
 
+# команды для определения значений query параметров.
+# First_name обязателен, last_name  - нет
 @app.route("/query")
 def query_name_message():
     first_name = request.args["first_name"]
@@ -59,6 +65,7 @@ def query_name_message():
     )
 
 
+# Определение типа строки и хеширование соответсвующим образом
 @app.route("/query/type", methods=["POST"])
 def query_hashed_message():
     type_message = request.args.get("type")
